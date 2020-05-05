@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.Function0;
 import org.eclipse.collections.api.block.predicate.Predicate;
@@ -39,6 +38,7 @@ import org.junit.Test;
  * like Consumer, Function and Predicate.
  *
  * Please refer to this tutorial for an overview of Lambdas for Java 8.
+ *
  * @see <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">Lambda Quickstart</a>
  *
  * Then follow the TODOs in each test and convert the anonymous inner classes to lambdas and/or method references.
@@ -51,17 +51,10 @@ public class EclipseCollectionsFunctionalInterfaceTest
         var strings = Lists.mutable.with("one", "two", "three");
 
         // TODO - Can you remove the final keyword from the variable below?
-        final var result = Lists.mutable.empty();
+        var result = Lists.mutable.empty();
 
         // TODO - Convert the anonymous inner class to a lambda
-        var procedure = new Procedure<String>()
-        {
-            @Override
-            public void value(String each)
-            {
-                result.add(each.toUpperCase());
-            }
-        };
+        Procedure<String> procedure = (Procedure<String>) each -> result.add(each.toUpperCase());
         procedure.accept("zero");
         Assert.assertEquals(Lists.mutable.with("ZERO"), result);
         strings.each(procedure);
@@ -74,14 +67,7 @@ public class EclipseCollectionsFunctionalInterfaceTest
         var numbers = Interval.oneTo(10).toList();
 
         // TODO - Convert the anonymous inner class to a lambda
-        var evenPredicate = new Predicate<Integer>()
-        {
-            @Override
-            public boolean accept(Integer integer)
-            {
-                return integer % 2 == 0;
-            }
-        };
+        Predicate<Integer> evenPredicate = (Predicate<Integer>) integer -> integer % 2 == 0;
         Assert.assertTrue(evenPredicate.test(2));
         Assert.assertFalse(evenPredicate.test(1));
         MutableList<Integer> evens = numbers.select(evenPredicate);
@@ -100,14 +86,7 @@ public class EclipseCollectionsFunctionalInterfaceTest
         var numbers = Interval.oneTo(10).toList();
 
         // TODO - Convert the anonymous inner class to a lambda
-        var oddPredicate = new Predicate<Integer>()
-        {
-            @Override
-            public boolean accept(Integer integer)
-            {
-                return integer % 2 == 1;
-            }
-        };
+        Predicate<Integer> oddPredicate = (Predicate<Integer>) integer -> integer % 2 == 1;
         Assert.assertFalse(oddPredicate.test(2));
         Assert.assertTrue(oddPredicate.test(1));
         MutableList<Integer> odds = numbers.select(oddPredicate);
@@ -124,14 +103,7 @@ public class EclipseCollectionsFunctionalInterfaceTest
     public void function()
     {
         // TODO - Convert the anonymous inner class to a lambda and then a method reference
-        var toUppercase = new Function<String, String>()
-        {
-            @Override
-            public String valueOf(String string)
-            {
-                return string.toUpperCase();
-            }
-        };
+        Function<String, String> toUppercase = (Function<String, String>) String::toUpperCase;
         Assert.assertEquals("UPPERCASE", toUppercase.apply("uppercase"));
         MutableList<String> lowercase = Lists.mutable.with("a", "b", "c", "d");
         MutableList<String> uppercase = lowercase.collect(toUppercase);
@@ -142,14 +114,7 @@ public class EclipseCollectionsFunctionalInterfaceTest
     public void function0()
     {
         // TODO - Convert this anonymous inner class to a lambda and then to a constructor reference
-        var supplier = new Function0<List<String>>()
-        {
-            @Override
-            public List<String> value()
-            {
-                return FastList.newList();
-            }
-        };
+        Function0<List<String>> supplier = (Function0<List<String>>) FastList::newList;
         Assert.assertEquals(Lists.mutable.empty(), supplier.get());
         Assert.assertNotSame(supplier.get(), supplier.get());
         List<String> list = Stream.of("1", "2", "3").collect(Collectors.toCollection(supplier));
@@ -161,14 +126,8 @@ public class EclipseCollectionsFunctionalInterfaceTest
     {
         var result = Maps.mutable.empty();
         // TODO - Convert the anonymous inner class to a lambda
-        var procedure2 = new Procedure2<String, String>()
-        {
-            @Override
-            public void value(String key, String value)
-            {
-                result.put(key.toUpperCase(), value.toUpperCase());
-            }
-        };
+        Procedure2<String, String> procedure2 = (Procedure2<String, String>) (key, value) -> result
+            .put(key.toUpperCase(), value.toUpperCase());
         procedure2.accept("a", "one");
         Assert.assertEquals(Maps.mutable.with("A", "ONE"), result);
         Maps.mutable.with("b", "two", "c", "three").forEachKeyValue(procedure2);

@@ -18,7 +18,6 @@ package bnymellon.codekatas.donutkata;
 
 import java.time.LocalDate;
 import java.util.DoubleSummaryStatistics;
-
 import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.api.bag.MutableBag;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -46,12 +45,12 @@ public class DonutShop
     private static final int DOZEN = 12;
     private static final int BAKERS_DOZEN = 13;
     private static final ImmutableList<ObjectDoublePair<IntInterval>> PRICES =
-            Lists.immutable.with(
-                    PrimitiveTuples.pair(IntInterval.zeroTo(SINGLE), 1.50d),
-                    PrimitiveTuples.pair(IntInterval.fromTo(DOUBLE, HALF_DOZEN - 1), 1.35d),
-                    PrimitiveTuples.pair(IntInterval.fromTo(HALF_DOZEN, DOZEN - 1), 1.25d),
-                    PrimitiveTuples.pair(IntInterval.fromTo(DOZEN, DOZEN), 1.00d),
-                    PrimitiveTuples.pair(IntInterval.fromTo(BAKERS_DOZEN, DOZEN * 100), 0.95d));
+        Lists.immutable.with(
+            PrimitiveTuples.pair(IntInterval.zeroTo(SINGLE), 1.50d),
+            PrimitiveTuples.pair(IntInterval.fromTo(DOUBLE, HALF_DOZEN - 1), 1.35d),
+            PrimitiveTuples.pair(IntInterval.fromTo(HALF_DOZEN, DOZEN - 1), 1.25d),
+            PrimitiveTuples.pair(IntInterval.fromTo(DOZEN, DOZEN), 1.00d),
+            PrimitiveTuples.pair(IntInterval.fromTo(BAKERS_DOZEN, DOZEN * 100), 0.95d));
 
     private MutableBag<DonutType> donuts = Bags.mutable.empty();
     private MutableList<Order> orders = Lists.mutable.empty();
@@ -92,11 +91,11 @@ public class DonutShop
     private Delivery createDelivery(Order order, double price)
     {
         ImmutableList<Donut> donuts =
-                order.getCounts()
-                        .asLazy()
-                        .collect(type -> new Donut(type, price))
-                        .toList()
-                        .toImmutable();
+            order.getCounts()
+                 .asLazy()
+                 .collect(type -> new Donut(type, price))
+                 .toList()
+                 .toImmutable();
         Delivery delivery = new Delivery(order, donuts);
         this.deliveries.add(delivery);
         return delivery;
@@ -105,9 +104,11 @@ public class DonutShop
     private double calculatePricePerDonut(int orderSize)
     {
         return PRICES.detectIfNone(
-                pair -> pair.getOne().contains(orderSize),
-                () -> { throw new IllegalArgumentException("This order cannot be satisfied");})
-                .getTwo();
+            pair -> pair.getOne().contains(orderSize),
+            () -> {
+                throw new IllegalArgumentException("This order cannot be satisfied");
+            })
+                     .getTwo();
     }
 
     private Order createOrder(Customer customer, LocalDate date, String donutTypeCounts)
@@ -120,7 +121,8 @@ public class DonutShop
     private Customer getOrCreateCustomer(String customerName)
     {
         Customer customer =
-                this.customers.detectWithIfNone(Customer::named, customerName, () -> new Customer(customerName));
+            this.customers
+                .detectWithIfNone(Customer::named, customerName, () -> new Customer(customerName));
         if (!this.customers.contains(customer))
         {
             this.customers.add(customer);
@@ -139,43 +141,51 @@ public class DonutShop
         // Hint: Look at the domain and use deliveries which have collections of ordered donuts
         // Hint: You will need to flatten the donuts and collect their donut types
         // Hint: Bag has a method named topOccurrences(n)
-        return null;
+        return this.deliveries.flatCollect(Delivery::getDonuts)
+                              .collect(Donut::getType)
+                              .toBag()
+                              .topOccurrences(n);
     }
 
     public double getTotalDeliveryValueFor(LocalDate date)
     {
         // TODO - Write the code necessary to sum up the total delivery value for the specified date
         // Hint: Look at sumOfDouble()
-        return 0.0d;
+        return this.deliveries
+            .selectWith(Delivery::deliveredOn, date)
+            .sumOfDouble(Delivery::getTotalPrice);
     }
 
     public Customer getTopCustomer()
     {
         // TODO - Write the code necessary to find the max Customer by total donuts ordered
         // Hint: There is a method maxBy on all RichIterables
-        return null;
+        return this.customers.maxBy(Customer::getTotalDonutsOrdered);
     }
 
     public Multimap<DonutType, Customer> getCustomersByDonutTypesOrdered()
     {
         // TODO - Group all of the Customers by the Donut Types they order
         // Hint: There is a method groupByEach which takes a function which returns Iterable
-        return null;
+        return this.customers.groupByEach(Customer::getDonutTypesOrdered);
     }
 
     public DoubleSummaryStatistics getDonutPriceStatistics(LocalDate fromDate, LocalDate toDate)
     {
         // TODO - Calculate the DoubleSummaryStatistics for the deliveries inclusive of the specified date range.
         // Hint: Look at select(), flatCollect() and summarizeDouble()
-        return null;
+        return this.deliveries
+            .reject(d -> d.getDate().isBefore(fromDate) || d.getDate().isAfter(toDate))
+            .flatCollect(Delivery::getDonuts)
+            .summarizeDouble(Donut::getPrice);
     }
 
     @Override
     public String toString()
     {
         return "DonutShop(" +
-                "donuts=" + this.donuts.toStringOfItemToCount() +
-                ", deliveries=" + this.deliveries +
-                ')';
+               "donuts=" + this.donuts.toStringOfItemToCount() +
+               ", deliveries=" + this.deliveries +
+               ')';
     }
 }

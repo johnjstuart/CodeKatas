@@ -16,9 +16,17 @@
 
 package bnymellon.codekatas.codepointkata;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.eclipse.collections.api.bag.primitive.CharBag;
+import org.eclipse.collections.api.bag.primitive.MutableCharBag;
 import org.eclipse.collections.api.list.ImmutableList;
+import org.eclipse.collections.impl.collector.Collectors2;
 import org.eclipse.collections.impl.factory.primitive.CharBags;
+import org.eclipse.collections.impl.string.immutable.CharAdapter;
+import org.eclipse.collections.impl.string.immutable.CodePointList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,13 +39,18 @@ public class CodePointKataTest
         // Hint: Look at Paths.get(URI)
         // Hint: Look at Files.lines(Path) which returns a Stream<String>
 
+        Stream<String> lines = Files.lines(Paths.get(url.toURI()));
+
         // Write the code necessary to read the file of code points into an ImmutableList of String
         // The code points are comma separated, and need to be converted into a String
         // Blank lines will need to be converted to empty Strings
         // Hint: Look at String.split(String)
         // Hint: Look at new String(int[], int, int) or CodePointList.from(int...)
         // Hint: Look at Collectors2.toImmutableList()
-        ImmutableList<String> list = null;
+        ImmutableList<String> list = lines.map(s -> this
+            .convertCodePointsToString(Arrays.stream(s.split(" "))
+                                             .mapToInt(Integer::parseInt)
+                                             .toArray())).collect(Collectors2.toImmutableList());
 
         // Write the code necessary to collect the list of Strings into a bag of characters
         // Iterate over each String collecting it's characters into the characters Bag
@@ -45,7 +58,8 @@ public class CodePointKataTest
         // Hint: Look at CharAdapter.toBag() which returns a MutableCharBag.
         // Hint: Look at ImmutableList.collect(Function)
         // Hint: Look at ImmutableList.each(Procedure) or ImmutableList.injectInto(IV, Function2)
-        var characters = CharBags.mutable.empty();
+        var characters = list.collect(CharAdapter::adapt)
+                             .injectInto(CharBags.mutable.empty(), MutableCharBag::withAll);
 
         Assert.assertTrue(this.expectedBagOfCharacters(characters));
 
@@ -55,51 +69,51 @@ public class CodePointKataTest
 
     private boolean expectedBagOfCharacters(CharBag actual)
     {
-        return  actual.occurrencesOf(' ') == 8 &&
-                actual.occurrencesOf('.') == 1 &&
-                actual.occurrencesOf('T') == 1 &&
-                actual.occurrencesOf('a') == 1 &&
-                actual.occurrencesOf('b') == 1 &&
-                actual.occurrencesOf('c') == 1 &&
-                actual.occurrencesOf('d') == 1 &&
-                actual.occurrencesOf('e') == 3 &&
-                actual.occurrencesOf('f') == 1 &&
-                actual.occurrencesOf('g') == 1 &&
-                actual.occurrencesOf('h') == 2 &&
-                actual.occurrencesOf('i') == 1 &&
-                actual.occurrencesOf('j') == 1 &&
-                actual.occurrencesOf('k') == 1 &&
-                actual.occurrencesOf('l') == 1 &&
-                actual.occurrencesOf('m') == 1 &&
-                actual.occurrencesOf('n') == 1 &&
-                actual.occurrencesOf('o') == 4 &&
-                actual.occurrencesOf('p') == 1 &&
-                actual.occurrencesOf('q') == 1 &&
-                actual.occurrencesOf('r') == 2 &&
-                actual.occurrencesOf('s') == 1 &&
-                actual.occurrencesOf('t') == 1 &&
-                actual.occurrencesOf('u') == 2 &&
-                actual.occurrencesOf('v') == 1 &&
-                actual.occurrencesOf('w') == 1 &&
-                actual.occurrencesOf('x') == 1 &&
-                actual.occurrencesOf('y') == 1 &&
-                actual.occurrencesOf('z') == 1;
+        return actual.occurrencesOf(' ') == 8 &&
+               actual.occurrencesOf('.') == 1 &&
+               actual.occurrencesOf('T') == 1 &&
+               actual.occurrencesOf('a') == 1 &&
+               actual.occurrencesOf('b') == 1 &&
+               actual.occurrencesOf('c') == 1 &&
+               actual.occurrencesOf('d') == 1 &&
+               actual.occurrencesOf('e') == 3 &&
+               actual.occurrencesOf('f') == 1 &&
+               actual.occurrencesOf('g') == 1 &&
+               actual.occurrencesOf('h') == 2 &&
+               actual.occurrencesOf('i') == 1 &&
+               actual.occurrencesOf('j') == 1 &&
+               actual.occurrencesOf('k') == 1 &&
+               actual.occurrencesOf('l') == 1 &&
+               actual.occurrencesOf('m') == 1 &&
+               actual.occurrencesOf('n') == 1 &&
+               actual.occurrencesOf('o') == 4 &&
+               actual.occurrencesOf('p') == 1 &&
+               actual.occurrencesOf('q') == 1 &&
+               actual.occurrencesOf('r') == 2 &&
+               actual.occurrencesOf('s') == 1 &&
+               actual.occurrencesOf('t') == 1 &&
+               actual.occurrencesOf('u') == 2 &&
+               actual.occurrencesOf('v') == 1 &&
+               actual.occurrencesOf('w') == 1 &&
+               actual.occurrencesOf('x') == 1 &&
+               actual.occurrencesOf('y') == 1 &&
+               actual.occurrencesOf('z') == 1;
     }
 
     @Test
     public void codePointsToHelloWorldHowAreYou()
     {
         Assert.assertEquals(
-                "Hello World!",
-                this.convertCodePointsToString(72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33));
+            "Hello World!",
+            this.convertCodePointsToString(72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33));
         Assert.assertEquals(
-                "How are you?",
-                this.convertCodePointsToString(72, 111, 119, 32, 97, 114, 101, 32, 121, 111, 117, 63));
+            "How are you?",
+            this.convertCodePointsToString(72, 111, 119, 32, 97, 114, 101, 32, 121, 111, 117, 63));
     }
 
     private String convertCodePointsToString(int... codePoints)
     {
         // Hint: Look at new String(int[], int, int) or CodePointList.from(int...)
-        return "";
+        return CodePointList.from(codePoints).toString();
     }
 }

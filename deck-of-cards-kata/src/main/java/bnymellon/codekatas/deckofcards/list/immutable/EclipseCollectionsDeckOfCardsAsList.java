@@ -16,19 +16,22 @@
 
 package bnymellon.codekatas.deckofcards.list.immutable;
 
+import bnymellon.codekatas.deckofcards.Card;
+import bnymellon.codekatas.deckofcards.Rank;
+import bnymellon.codekatas.deckofcards.Suit;
 import java.util.Random;
 import java.util.Set;
-
+import java.util.SortedSet;
 import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.api.block.function.Function;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.factory.Sets;
+import org.eclipse.collections.api.factory.SortedSets;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.multimap.list.ImmutableListMultimap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.stack.MutableStack;
-
-import bnymellon.codekatas.deckofcards.Card;
-import bnymellon.codekatas.deckofcards.Rank;
-import bnymellon.codekatas.deckofcards.Suit;
+import org.eclipse.collections.impl.list.primitive.IntInterval;
 
 public class EclipseCollectionsDeckOfCardsAsList
 {
@@ -44,15 +47,19 @@ public class EclipseCollectionsDeckOfCardsAsList
      */
     public EclipseCollectionsDeckOfCardsAsList()
     {
-        this.cards = null;
-        this.cardsBySuit = null;
+        this.cards = SortedSets.immutable.ofAll(Card.lazyCards()).toList().toImmutable();
+        this.cardsBySuit = this.cards.groupBy(Card::suit);
     }
 
     public MutableStack<Card> shuffle(Random random)
     {
         // TODO Shuffle the deck 3 times with the Random parameter and push the shuffled cards onto a MutableStack
         // Hint: Look at MutableList.shuffleThis(Random) and toStack()
-        return null;
+        return this.cards.toList()
+                         .shuffleThis(random)
+                         .shuffleThis(random)
+                         .shuffleThis(random)
+                         .toStack();
     }
 
     public MutableSet<Card> deal(MutableStack<Card> stack, int count)
@@ -67,51 +74,54 @@ public class EclipseCollectionsDeckOfCardsAsList
     }
 
     public ImmutableList<Set<Card>> dealHands(
-            MutableStack<Card> shuffled,
-            int hands,
-            int cardsPerHand)
+        MutableStack<Card> shuffled,
+        int hands,
+        int cardsPerHand)
     {
         // TODO Deal the number of hands with the cardsPerHand into an ImmutableList<Set<Card>>
         // Hint: Look at IntInterval.collect()
-        return null;
+        return IntInterval.oneTo(hands)
+                          .collect(h -> Set.copyOf(this.deal(shuffled, cardsPerHand)))
+                          .toList()
+                          .toImmutable();
     }
 
     public ImmutableList<Card> diamonds()
     {
         // TODO Return all of the diamonds as an ImmutableList
-        return null;
+        return this.cardsBySuit.get(Suit.DIAMONDS);
     }
 
     public ImmutableList<Card> hearts()
     {
         // TODO Return all of the hearts as an ImmutableList
-        return null;
+        return this.cardsBySuit.get(Suit.HEARTS);
     }
 
     public ImmutableList<Card> spades()
     {
         // TODO Return all of the spades as an ImmutableList
-        return null;
+        return this.cardsBySuit.get(Suit.SPADES);
     }
 
     public ImmutableList<Card> clubs()
     {
         // TODO Return all of the clubs as an ImmutableList
-        return null;
+        return this.cardsBySuit.get(Suit.CLUBS);
     }
 
     public Bag<Suit> countsBySuit()
     {
         // TODO return the count of cards by Suit
         // Hint: Look at countBy()
-        return null;
+        return this.cardsBySuit.keyBag();
     }
 
     public Bag<Rank> countsByRank()
     {
         // TODO return the count of cards by Rank
         // Hint: Look at countBy()
-        return null;
+        return this.cards.countBy(Card::rank);
     }
 
     public ImmutableList<Card> getCards()

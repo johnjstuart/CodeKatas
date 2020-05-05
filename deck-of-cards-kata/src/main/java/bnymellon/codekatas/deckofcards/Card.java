@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.block.function.Function2;
 import org.eclipse.collections.impl.factory.Sets;
@@ -35,34 +34,34 @@ public record Card(Rank rank, Suit suit) implements Comparable<Card>
     public static LazyIterable<Card> lazyCards()
     {
         return Sets.cartesianProduct(
-                EnumSet.allOf(Rank.class),
-                EnumSet.allOf(Suit.class),
-                Card::new);
+            EnumSet.allOf(Rank.class),
+            EnumSet.allOf(Suit.class),
+            Card::new);
     }
 
     public static Stream<Card> streamCards()
     {
         return Card.cartesianProduct(
-                EnumSet.allOf(Rank.class),
-                EnumSet.allOf(Suit.class),
-                Card::new);
+            EnumSet.allOf(Rank.class),
+            EnumSet.allOf(Suit.class),
+            Card::new);
     }
 
     private static <A, B, C> Stream<C> cartesianProduct(
-            Set<A> set1,
-            Set<B> set2,
-            Function2<A, B, C> function)
+        Set<A> set1,
+        Set<B> set2,
+        Function2<A, B, C> function)
     {
         // TODO Implement Cartesian Product using Java 8 Streams
         // Hint: Check out flatMap() and map() on Stream
-        return Card.imperativeCartesianProductOfCards(set1, set2, function).stream();
+        return set1.stream().flatMap(a -> set2.stream().map(b -> function.apply(a, b)));
     }
 
     @Deprecated
     private static <A, B, C> List<C> imperativeCartesianProductOfCards(
-            Set<A> set1,
-            Set<B> set2,
-            Function2<A, B, C> function)
+        Set<A> set1,
+        Set<B> set2,
+        Function2<A, B, C> function)
     {
         var result = new ArrayList<C>();
         for (A first : set1)

@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.eclipse.collections.impl.block.factory.Functions;
 import org.eclipse.collections.impl.list.Interval;
 import org.junit.Assert;
@@ -38,24 +37,19 @@ import org.junit.Test;
  * like Comparator, Runnable and Callable.
  *
  * Please refer to this tutorial for an overview of Lambdas for Java 8.
+ *
  * @see <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">Lambda Quickstart</a>
  *
  * Then follow the TODOs in each test and convert the anonymous inner classes to lambdas and/or method references.
  */
 public class ClassicSAMInterfaceTest
 {
+
     @Test
     public void comparator()
     {
         // TODO - Convert the comparator to a lambda and then to a method reference
-        var comparator = new Comparator<Integer>()
-        {
-            @Override
-            public int compare(Integer one, Integer two)
-            {
-                return one.compareTo(two);
-            }
-        };
+        Comparator<Integer> comparator = Integer::compareTo;
         Assert.assertEquals(0, comparator.compare(1, 1));
         Assert.assertEquals(-1, comparator.compare(1, 2));
         Assert.assertEquals(1, comparator.compare(3, 2));
@@ -73,25 +67,11 @@ public class ClassicSAMInterfaceTest
         // Note: The following list reference is "effectively" final, which is a new feature in Java 8
         var list = new ArrayList<Integer>();
         // TODO - convert the anonymous Inner class to a lambda
-        var runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                list.add(1);
-            }
-        };
+        Runnable runnable = () -> list.add(1);
         runnable.run();
         Assert.assertEquals(List.of(1), list);
         // TODO - convert the anonymous Inner class to a lambda
-        Interval.fromTo(2, 10).run(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                list.add(1);
-            }
-        });
+        Interval.fromTo(2, 10).run(() -> list.add(1));
         var expectedList = Collections.nCopies(10, 1);
         Assert.assertEquals(expectedList, list);
     }
@@ -102,14 +82,7 @@ public class ClassicSAMInterfaceTest
         // Note: The following set references is "effectively" final, which is a new feature in Java 8
         var set = new HashSet<Integer>();
         // TODO - convert the anonymous inner class to lambda
-        var callable = new Callable<Boolean>()
-        {
-            @Override
-            public Boolean call() throws Exception
-            {
-                return set.add(1);
-            }
-        };
+        Callable<Boolean> callable = () -> set.add(1);
         Assert.assertTrue(callable.call());
         Assert.assertEquals(Set.of(1), set);
 

@@ -56,13 +56,13 @@ public class MyCalendarTest
     private void setupWeekendMeetings()
     {
         this.calendar.addMeeting("Soccer Match",
-                LocalDate.of(2017, 7, 2),
-                LocalTime.of(13, 0),
-                Duration.ofHours(2));
+                                 LocalDate.of(2017, 7, 2),
+                                 LocalTime.of(13, 0),
+                                 Duration.ofHours(2));
         this.calendar.addMeeting("Swimming Championship",
-                LocalDate.of(2017, 7, 8),
-                LocalTime.of(13, 0),
-                Duration.ofHours(2));
+                                 LocalDate.of(2017, 7, 8),
+                                 LocalTime.of(13, 0),
+                                 Duration.ofHours(2));
     }
 
     /**
@@ -71,13 +71,13 @@ public class MyCalendarTest
     private void setupOverlappingWeekendMeetings()
     {
         this.calendar.addMeeting("Soccer Match",
-                LocalDate.of(2017, 7, 2),
-                LocalTime.of(12, 30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 2),
+                                 LocalTime.of(12, 30),
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Swimming Championship",
-                LocalDate.of(2017, 7, 8),
-                LocalTime.of(12, 30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 8),
+                                 LocalTime.of(12, 30),
+                                 Duration.ofHours(1));
     }
 
     /**
@@ -86,21 +86,21 @@ public class MyCalendarTest
     private void setupWeekdayMeetings()
     {
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 3),
-                LocalTime.NOON,
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 3),
+                                 LocalTime.NOON,
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 5),
-                LocalTime.NOON,
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 5),
+                                 LocalTime.NOON,
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 6),
-                LocalTime.NOON,
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 6),
+                                 LocalTime.NOON,
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 7),
-                LocalTime.NOON,
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 7),
+                                 LocalTime.NOON,
+                                 Duration.ofHours(1));
     }
 
     /**
@@ -109,21 +109,21 @@ public class MyCalendarTest
     private void setupOverlappingWeekdayMeetings()
     {
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 3),
-                LocalTime.NOON.plusMinutes(30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 3),
+                                 LocalTime.NOON.plusMinutes(30),
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 5),
-                LocalTime.NOON.plusMinutes(30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 5),
+                                 LocalTime.NOON.plusMinutes(30),
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 6),
-                LocalTime.NOON.plusMinutes(30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 6),
+                                 LocalTime.NOON.plusMinutes(30),
+                                 Duration.ofHours(1));
         this.calendar.addMeeting("Lunch",
-                LocalDate.of(2017, 7, 7),
-                LocalTime.NOON.plusMinutes(30),
-                Duration.ofHours(1));
+                                 LocalDate.of(2017, 7, 7),
+                                 LocalTime.NOON.plusMinutes(30),
+                                 Duration.ofHours(1));
     }
 
     @Test
@@ -139,15 +139,16 @@ public class MyCalendarTest
     public void hasOverlappingMeeting()
     {
         Assert.assertTrue(this.calendar.hasOverlappingMeeting(
-                LocalDate.of(2017, 7, 7),
-                LocalTime.NOON,
-                Duration.ofHours(1)));
+            LocalDate.of(2017, 7, 7),
+            LocalTime.NOON,
+            Duration.ofHours(1)));
     }
 
     @Test
     public void getMeetingsForDate()
     {
-        SortedSetIterable<Meeting> meetingsForJuly6 = this.calendar.getMeetingsForDate(LocalDate.of(2017, 7, 6));
+        SortedSetIterable<Meeting> meetingsForJuly6 = this.calendar
+            .getMeetingsForDate(LocalDate.of(2017, 7, 6));
         Verify.assertSize(1, meetingsForJuly6);
         System.out.println(meetingsForJuly6);
     }
@@ -179,10 +180,12 @@ public class MyCalendarTest
     @Test
     public void getAvailableTimeslots()
     {
-        MutableList<Interval> availableTimeslots1 = this.calendar.getAvailableTimeslots(LocalDate.of(2017, 7, 6));
+        MutableList<Interval> availableTimeslots1 = this.calendar
+            .getAvailableTimeslots(LocalDate.of(2017, 7, 6));
         Assert.assertEquals(2, availableTimeslots1.size());
         System.out.println(availableTimeslots1);
-        MutableList<Interval> availableTimeslots2 = this.calendar.getAvailableTimeslots(LocalDate.of(2017, 7, 1));
+        MutableList<Interval> availableTimeslots2 = this.calendar
+            .getAvailableTimeslots(LocalDate.of(2017, 7, 1));
         Assert.assertEquals(1, availableTimeslots2.size());
         System.out.println(availableTimeslots2);
     }

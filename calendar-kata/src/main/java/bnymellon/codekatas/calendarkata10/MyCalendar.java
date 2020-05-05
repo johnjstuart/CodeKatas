@@ -25,10 +25,10 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
-
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.Function2;
 import org.eclipse.collections.api.block.predicate.Predicate2;
+import org.eclipse.collections.api.list.ListIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.multimap.sortedset.MutableSortedSetMultimap;
 import org.eclipse.collections.api.set.sorted.SortedSetIterable;
@@ -73,7 +73,8 @@ public class MyCalendar
         return new FullWeek(value, this.meetings);
     }
 
-    public boolean addMeeting(String subject, LocalDate date, LocalTime startTime, Duration duration)
+    public boolean addMeeting(String subject, LocalDate date, LocalTime startTime,
+        Duration duration)
     {
         if (!this.hasOverlappingMeeting(date, startTime, duration))
         {
@@ -93,7 +94,11 @@ public class MyCalendar
      */
     public boolean hasOverlappingMeeting(LocalDate date, LocalTime startTime, Duration duration)
     {
-        return false;
+        return this.getMeetingsForDate(date)
+                   .anySatisfyWith(Meeting::overlaps,
+                                   Interval.of(startTime.atDate(date)
+                                                        .atZone(this.getZoneId())
+                                                        .toInstant(), duration));
     }
 
     /**
@@ -109,14 +114,25 @@ public class MyCalendar
      */
     public MutableList<Interval> getAvailableTimeslots(LocalDate date)
     {
-        return Lists.mutable.empty();
+        Interval allDay = Interval.of(date.atStartOfDay(this.getZoneId()).toInstant(),
+                                      Duration.ofHours(24));
+        ListIterable<Interval> meetings = this.getMeetingsForDate(date)
+                                              .collect(Meeting::getInterval);
+        MutableList<Instant> startFreeTime = Lists.mutable
+            .of(allDay.getStart())
+            .withAll(meetings.collect(Interval::getEnd));
+        MutableList<Instant> endFreeTime = Lists.mutable
+            .ofAll(meetings.collect(Interval::getStart))
+            .with(allDay.getEnd());
+        return startFreeTime.zip(endFreeTime)
+                            .collect(pair -> Interval.of(pair.getOne(), pair.getTwo()));
     }
 
     @Override
     public String toString()
     {
         return "MyCalendar(" +
-                "meetings=" + this.meetings +
-                ')';
+               "meetings=" + this.meetings +
+               ')';
     }
 }
